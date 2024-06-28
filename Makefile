@@ -62,8 +62,7 @@ pdf: convert
 		--variable=fontsize:12pt \
 		--variable=papersize:a4paper \
 		--variable=documentclass:report \
-		--variable=lang:german \
-		--variable=mainlang:german \
+		--variable=lang:de \
 		--pdf-engine=xelatex \
 		"${INPUTDIR}"/*.md \
 		"${INPUTDIR}/metadata.yml" \
@@ -85,8 +84,7 @@ tex: convert
 		--variable=fontsize:12pt \
 		--variable=papersize:a4paper \
 		--variable=documentclass:report \
-		--variable=lang:german \
-		--variable=mainlang:german \
+		--variable=lang:de \
 		--pdf-engine=xelatex \
 		"${INPUTDIR}"/*.md \
 		"${INPUTDIR}/metadata.yml" \
@@ -105,6 +103,7 @@ html: convert
 		--output "${OUTPUTDIR}/${DOCNAME}.html" \
 		--template="${STYLEDIR}/template.html" \
 		--include-in-header="${STYLEDIR}/style.css" \
+		--variable=lang:de \
 		--toc \
 		"${INPUTDIR}"/*.md \
 		"${INPUTDIR}/metadata.yml" \
@@ -124,6 +123,7 @@ html: convert
 docx: convert
 	pandoc  \
 		--output "${OUTPUTDIR}/${DOCNAME}.docx" \
+		--variable=lang:de \
 		--toc \
 		"${INPUTDIR}"/*.md \
 		"${INPUTDIR}/metadata.yml" \
@@ -142,6 +142,7 @@ epub: convert
 	pandoc  \
 		--output "${OUTPUTDIR}/${DOCNAME}.html" \
 		--template="${STYLEDIR}/template-default.epub3" \
+		--variable=lang:de \
 		--toc \
 		"${INPUTDIR}"/*.md \
 		"${INPUTDIR}/metadata.yml" \

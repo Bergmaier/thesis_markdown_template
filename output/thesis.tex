@@ -1,4 +1,4 @@
-\documentclass[listof=totoc,index=totoc,bibliography=totoc,12pt,german,a4paper,]{report}
+\documentclass[listof=totoc,index=totoc,bibliography=totoc,12pt,ngerman,a4paper,]{report}
 \usepackage{lmodern}
 
 % use sans serif fonts
@@ -111,12 +111,7 @@
 \setlength{\parskip}{6pt plus 2pt minus 1pt}
 \setlength{\emergencystretch}{3em}  % prevent overfull lines
 \setcounter{secnumdepth}{5}
-\ifxetex
-  \usepackage{polyglossia}
-  \setmainlanguage{german}
-\else
-  \usepackage[german]{babel}
-\fi
+\usepackage[main=ngerman]{babel}
 
 % % \newlength{\cslhangindent}
 % \setlength{\cslhangindent}{1.5em}
