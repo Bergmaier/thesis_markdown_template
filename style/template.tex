@@ -1,19 +1,26 @@
-\documentclass[$if(fontsize)$$fontsize$,$endif$$if(lang)$$lang$,$endif$$if(papersize)$$papersize$,$endif$$for(classoption)$$classoption$$sep$,$endfor$]{$documentclass$}
+\documentclass[listof=totoc,index=totoc,bibliography=totoc,$if(fontsize)$$fontsize$,$endif$$if(lang)$$lang$,$endif$$if(papersize)$$papersize$,$endif$$for(classoption)$$classoption$$sep$,$endfor$]{$documentclass$}
 $if(fontfamily)$
 \usepackage{$fontfamily$}
 $else$
 \usepackage{lmodern}
 $endif$
 
+% use sans serif fonts
+\renewcommand{\familydefault}{\sfdefault}
+
+% german quote style, see:
+% http://mirrors.ibiblio.org/CTAN/info/translations/csquotes/de/csquotes-DE.pdf
+\usepackage[style = german]{csquotes}%
+
 % Overwrite \begin{figure}[htbp] with \begin{figure}[H]
-\usepackage{float}
-\let\origfigure=\figure
-\let\endorigfigure=\endfigure
-\renewenvironment{figure}[1][]{%
-\origfigure[b]
-}{%
-\endorigfigure
-}
+%\usepackage{float}
+%\let\origfigure=\figure
+%\let\endorigfigure=\endfigure
+%\renewenvironment{figure}[1][]{%
+%\origfigure[b]
+%}{%
+%\endorigfigure
+%}
 
 % fix for pandoc 1.14
 \providecommand{\tightlist}{%
@@ -112,23 +119,7 @@ $if(graphics)$
 % using explicit options in \includegraphics[width, height, ...]{}
 \setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
 $endif$
-\ifxetex
-  \usepackage[setpagesize=false, % page size defined by xetex
-              unicode=false, % unicode breaks when used with xetex
-              xetex]{hyperref}
-\else
-  \usepackage[unicode=true]{hyperref}
-\fi
-\hypersetup{breaklinks=true,
-            bookmarks=true,
-            pdfauthor={$author-meta$},
-            pdftitle={$title-meta$},
-            colorlinks=true,
-            citecolor=$if(citecolor)$$citecolor$$else$blue$endif$,
-            urlcolor=$if(urlcolor)$$urlcolor$$else$blue$endif$,
-            linkcolor=$if(linkcolor)$$linkcolor$$else$magenta$endif$,
-            pdfborder={0 0 0}}
-\urlstyle{same}  % don't use monospace font for urls
+
 $if(links-as-notes)$
 % Make links footnotes instead of hotlinks:
 \renewcommand{\href}[2]{#2\footnote{\url{#1}}}
@@ -194,60 +185,28 @@ $for(header-includes)$
 $header-includes$
 $endfor$
 
+% References; This whole block should be the last before \begin{document}
+\usepackage[hyphens]{url} % enables line breaks in urls at hyphens
+\ifxetex
+  \usepackage[setpagesize=false, % page size defined by xetex
+              unicode=false, % unicode breaks when used with xetex
+              xetex]{hyperref}
+\else
+  \usepackage[unicode=true]{hyperref}
+\fi
+\hypersetup{breaklinks=true,
+            bookmarks=true,
+            pdfauthor={$author-meta$},
+            pdftitle={$title-meta$},
+            colorlinks=false,
+            citecolor=$if(citecolor)$$citecolor$$else$blue$endif$,
+            urlcolor=$if(urlcolor)$$urlcolor$$else$blue$endif$,
+            linkcolor=$if(linkcolor)$$linkcolor$$else$black$endif$,
+            linktoc=section}
+\urlstyle{same}  % don't use monospace font for urls
+\usepackage[figure]{hypcap}
+
 \begin{document}
-
-
-\begin{titlepage}
-    \begin{center}
-
-    % Delete the following line
-    % to remove the UCL header logo
-    \ThisULCornerWallPaper{1.0}{style/univ_logo.eps}
-
-        \vspace*{2.5cm}
-
-        \huge
-        $title$
-
-        $if(subtitle)$
-        \vspace{.5cm}
-
-        \Large
-        $subtitle$
-        $endif$
-
-
-        \vspace{1.5cm}
-
-        \Large
-        $author$
-
-        \vspace{1.5cm}
-
-        \normalsize
-        A thesis presented for the degree of\\
-        $degree$
-
-        \vfill
-
-        \normalsize
-        Supervised by:\\
-        $for(supervisor)$$supervisor$$sep$ \\ $endfor$
-
-        \vspace{0.8cm}
-
-        % Uncomment the following line
-        % to add a centered university logo
-        % \includegraphics[width=0.4\textwidth]{style/univ_logo.eps}
-
-        \normalsize
-        $location$\\
-        $date$
-
-        % Except where otherwise noted, content in this thesis is licensed under a Creative Commons Attribution 4.0 License (http://creativecommons.org/licenses/by/4.0), which permits unrestricted use, distribution, and reproduction in any medium, provided the original work is properly cited. Copyright 2015,Tom Pollard.
-
-    \end{center}
-\end{titlepage}
 
 $for(include-before)$
 $include-before$

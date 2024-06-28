@@ -1,15 +1,22 @@
-\documentclass[12pt,a4paper,]{report}
+\documentclass[listof=totoc,index=totoc,bibliography=totoc,12pt,german,a4paper,]{report}
 \usepackage{lmodern}
 
+% use sans serif fonts
+\renewcommand{\familydefault}{\sfdefault}
+
+% german quote style, see:
+% http://mirrors.ibiblio.org/CTAN/info/translations/csquotes/de/csquotes-DE.pdf
+\usepackage[style = german]{csquotes}%
+
 % Overwrite \begin{figure}[htbp] with \begin{figure}[H]
-\usepackage{float}
-\let\origfigure=\figure
-\let\endorigfigure=\endfigure
-\renewenvironment{figure}[1][]{%
-\origfigure[b]
-}{%
-\endorigfigure
-}
+%\usepackage{float}
+%\let\origfigure=\figure
+%\let\endorigfigure=\endfigure
+%\renewenvironment{figure}[1][]{%
+%\origfigure[b]
+%}{%
+%\endorigfigure
+%}
 
 % fix for pandoc 1.14
 \providecommand{\tightlist}{%
@@ -99,27 +106,17 @@
 % margins by default, and it is still possible to overwrite the defaults
 % using explicit options in \includegraphics[width, height, ...]{}
 \setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
-\ifxetex
-  \usepackage[setpagesize=false, % page size defined by xetex
-              unicode=false, % unicode breaks when used with xetex
-              xetex]{hyperref}
-\else
-  \usepackage[unicode=true]{hyperref}
-\fi
-\hypersetup{breaklinks=true,
-            bookmarks=true,
-            pdfauthor={Firstname Surname},
-            pdftitle={This is the title of the thesis},
-            colorlinks=true,
-            citecolor=blue,
-            urlcolor=blue,
-            linkcolor=magenta,
-            pdfborder={0 0 0}}
-\urlstyle{same}  % don't use monospace font for urls
+
 \setlength{\parindent}{0pt}
 \setlength{\parskip}{6pt plus 2pt minus 1pt}
 \setlength{\emergencystretch}{3em}  % prevent overfull lines
 \setcounter{secnumdepth}{5}
+\ifxetex
+  \usepackage{polyglossia}
+  \setmainlanguage{german}
+\else
+  \usepackage[german]{babel}
+\fi
 
 % % \newlength{\cslhangindent}
 % \setlength{\cslhangindent}{1.5em}
@@ -148,15 +145,29 @@
 \newcommand{\CSLRightInline}[1]{\parbox[t]{\linewidth - \csllabelwidth}{#1}\break}
 \newcommand{\CSLIndent}[1]{\hspace{\cslhangindent}#1}
 
-
-
 % Table of contents formatting
 \renewcommand{\contentsname}{Table of Contents}
 \setcounter{tocdepth}{3}
 
+% Number of the last page in the document
+\usepackage{lastpage}
+
+% Set margins
+% HAS TO BE before the \usepackage{fancyhdr} and \pagestyle{fancy} commands
+% Otherwise header and footer line will not match textwidth.
+\usepackage[top=2.5cm,bottom=2.5cm,left=3.5cm,right=2.5cm]{geometry}
+%\setlength\parindent{0.4in} % indent at start of paragraphs (set to 0.3?)
+
 % Headers and page numbering
 \usepackage{fancyhdr}
-\pagestyle{plain}
+\pagestyle{fancy}
+\fancyhf{}
+\rhead{\rightmark}
+%\rfoot{\thepage\space von \pageref{LastPage}}
+\rfoot{\thepage}
+\renewcommand{\headrulewidth}{0.5pt}
+\renewcommand{\footrulewidth}{0.5pt}
+%\setlength\voffset{0.2cm}
 
 % Following package is used to add background image to front page
 \usepackage{wallpaper}
@@ -170,25 +181,33 @@
 % add some \clearpage
 
 % % Chapter header
-% \usepackage{titlesec, blindtext, color}
-% \definecolor{gray75}{gray}{0.75}
-% \newcommand{\hsp}{\hspace{20pt}}
-% \titleformat{\chapter}[hang]{\Huge\bfseries}{\thechapter\hsp\textcolor{gray75}{|}\hsp}{0pt}{\Huge\bfseries}
+\usepackage{titlesec, blindtext, color}
+\definecolor{gray75}{gray}{0.75}
+\newcommand{\hsp}{\hspace{20pt}}
+\titleformat{\chapter}[hang]{\Huge\bfseries}{\thechapter\hsp\textcolor{gray75}{|}\hsp}{0pt}{\Huge\bfseries}
 
-% % Fonts and typesetting
-% \setmainfont[Scale=1.1]{Helvetica}
-% \setsansfont[Scale=1.1]{Verdana}
+% How should the first page of a chapter be handled? e.g. page number 
+% https://tex.stackexchange.com/a/10044
+%\makeatletter
+%\renewcommand\chapter{\if@openright\cleardoublepage\else\clearpage\fi
+%                    \thispagestyle{fancy}%
+%                    \global\@topnum\z@
+%                    \@afterindentfalse
+%                    \secdef\@chapter\@schapter}
+%\makeatother{}
+
+%Redefine plain for first chapter site
+\fancypagestyle{plain}{%
+\fancyhf{}%
+\fancyfoot[R]{\thepage}%
+\renewcommand{\headrulewidth}{0.0pt}%
+\renewcommand{\footrulewidth}{0.0pt}%
+}
 
 % FONTS
 \usepackage{xunicode}
 \usepackage{xltxtra}
 \defaultfontfeatures{Mapping=tex-text} % converts LaTeX specials (``quotes'' --- dashes etc.) to unicode
-% \setromanfont[Scale=1.01,Ligatures={Common},Numbers={OldStyle}]{Palatino}
-% \setromanfont[Scale=1.01,Ligatures={Common},Numbers={OldStyle}]{Adobe Caslon Pro}
-%Following line controls size of code chunks
-% \setmonofont[Scale=0.9]{Monaco}
-%Following line controls size of figure legends
-% \setsansfont[Scale=1.2]{Optima Regular}
 
 % CODE BLOCKS
 \usepackage[utf8]{inputenc}
@@ -196,11 +215,11 @@
 \usepackage{color}
 
 % JAVA CODE BLOCKS
-%\definecolor{backcolour}{RGB}{242,242,242}
-%\definecolor{javared}{rgb}{0.6,0,0}
-%\definecolor{javagreen}{rgb}{0.25,0.5,0.35}
-%\definecolor{javapurple}{rgb}{0.5,0,0.35}
-%\definecolor{javadocblue}{rgb}{0.25,0.35,0.75}
+\definecolor{backcolour}{RGB}{242,242,242}
+\definecolor{javared}{rgb}{0.6,0,0}
+\definecolor{javagreen}{rgb}{0.25,0.5,0.35}
+\definecolor{javapurple}{rgb}{0.5,0,0.35}
+\definecolor{javadocblue}{rgb}{0.25,0.35,0.75}
 
 \lstdefinestyle{javaCodeStyle}{
   language=Java,                         % the language of the code
@@ -229,21 +248,9 @@
 %\DeclareMathSizes{display size}{text size}{script size}{scriptscript size}.
 %\DeclareMathSizes{12}{13}{7}{7}
 
-% ---- CUSTOM AMPERSAND
-% \newcommand{\amper}{{\fontspec[Scale=.95]{Adobe Caslon Pro}\selectfont\itshape\&}}
-
-% HEADINGS
-\usepackage{sectsty}
-\usepackage[normalem]{ulem}
-\sectionfont{\rmfamily\mdseries\Large}
-\subsectionfont{\rmfamily\mdseries\scshape\large}
-\subsubsectionfont{\rmfamily\bfseries\upshape\large}
-% \sectionfont{\rmfamily\mdseries\Large}
-% \subsectionfont{\rmfamily\mdseries\scshape\normalsize}
-% \subsubsectionfont{\rmfamily\bfseries\upshape\normalsize}
-
 % Set figure legends and captions to be smaller sized sans serif font
 \usepackage[font={footnotesize,sf}]{caption}
+\captionsetup[table]{position=bottom}
 
 \usepackage{siunitx}
 
@@ -253,20 +260,9 @@
 \doublespacing
 \raggedbottom
 
-% Set margins
-\usepackage[top=1.5in,bottom=1.5in,left=1.5in,right=1.4in]{geometry}
-\setlength\parindent{0.5in} % indent at start of paragraphs (set to 0.3?)
-\setlength{\parskip}{9pt}
-\usepackage{indentfirst}
-
 % Add space between pararaphs
 % http://texblog.org/2012/11/07/correctly-typesetting-paragraphs-in-latex/
-% \usepackage{parskip}
-% \setlength{\parskip}{\baselineskip}
-
-% Set colour of links to black so that they don't show up when printed
-\usepackage{hyperref}
-\hypersetup{colorlinks=false, linkcolor=black}
+\setlength{\parskip}{8pt}
 
 % Tables
 \usepackage{booktabs}
@@ -335,69 +331,114 @@
 \newcommand*\listoflistings{\listof{codelisting}{List of Listings}}
 \makeatother
 
+% References; This whole block should be the last before \begin{document}
+\usepackage[hyphens]{url} % enables line breaks in urls at hyphens
+\ifxetex
+  \usepackage[setpagesize=false, % page size defined by xetex
+              unicode=false, % unicode breaks when used with xetex
+              xetex]{hyperref}
+\else
+  \usepackage[unicode=true]{hyperref}
+\fi
+\hypersetup{breaklinks=true,
+            bookmarks=true,
+            pdfauthor={Firstname Surname},
+            pdftitle={This is the title of the thesis},
+            colorlinks=false,
+            citecolor=blue,
+            urlcolor=blue,
+            linkcolor=black,
+            linktoc=section}
+\urlstyle{same}  % don't use monospace font for urls
+\usepackage[figure]{hypcap}
+
 \begin{document}
 
 
+% This is where the converted markdown files will go 
+\% Abschlussarbeit \newcommand{\titel}{Titel der Abschlussarbeit}
+\newcommand{\titelEN}{Title of your thesis}
+\newcommand{\datum}{01.03.2018}
+
+\% Autor\_in \newcommand{\aVorname}{Max}
+\newcommand{\aNachname}{Mustermann}
+\newcommand{\aGeburtsdatum}{01.04.1998}
+\newcommand{\aInstitution}{Hochschule München}
+\newcommand{\aStudiengruppe}{IF7} \newcommand{\aSemester}{WS 17/2018}
+\newcommand{\aMatrikelnummer}{12345678}
+
+\newcommand{\aName}{\aVorname\space\aNachname}
+
+\% Prüfer\_in \newcommand{\pTitle}{Prof. Dr.} \newcommand{\pVorname}{}
+\newcommand{\pNachname}{} \newcommand{\pInstitution}{Hochschule München}
+
+\% Betreuer\_in \newcommand{\bTitle}{Dr.} \newcommand{\bVorname}{}
+\newcommand{\bNachname}{} \newcommand{\bInstitution}{Firma GmbH}
+
+\title{Titel der Abschlussarbeit}
+\author{Max\space Mustermann}
+
 \begin{titlepage}
     \begin{center}
-
-    % Delete the following line
-    % to remove the UCL header logo
-    \ThisULCornerWallPaper{1.0}{style/univ_logo.eps}
-
-        \vspace*{2.5cm}
-
-        \huge
-        This is the title of the thesis
-
-                \vspace{.5cm}
+        \includegraphics[width=1\textwidth]{style/hm-fk07_logo.jpg}
 
         \Large
-        This is the subtitle of the thesis
+        Titel der Abschlussarbeit
         
+        \normalsize
+        Title of your thesis
 
-        \vspace{1.5cm}
-
+        \vspace{0.5cm}
         \Large
-        Firstname Surname
-
-        \vspace{1.5cm}
+        Max\space Mustermann
 
         \normalsize
-        A thesis presented for the degree of\\
-        Doctor of Philosophy
+        Bachelorarbeit Informatik
 
         \vfill
 
         \normalsize
-        Supervised by:\\
-        Professor Louis Fage \\ Captain J. Y. Cousteau
+        Prüfer:\\
+        Prof. Dr.\space\space,\space Hochschule München
 
-        \vspace{0.8cm}
-
-        % Uncomment the following line
-        % to add a centered university logo
-        % \includegraphics[width=0.4\textwidth]{style/univ_logo.eps}
+        % Firmenlogo
+        % \includegraphics[width=0.4\textwidth]{style/firmenlogo.png}
 
         \normalsize
-        University College London, UK\\
-        January 2015
+        Betreuer:\\
+        Dr.\space\space,\space Firma GmbH
 
-        % Except where otherwise noted, content in this thesis is licensed under a Creative Commons Attribution 4.0 License (http://creativecommons.org/licenses/by/4.0), which permits unrestricted use, distribution, and reproduction in any medium, provided the original work is properly cited. Copyright 2015,Tom Pollard.
+        % Abgabedatum
+        01.03.2018
 
     \end{center}
 \end{titlepage}
 
+\chapter*{Erklärung}\label{erkluxe4rung}
+\addcontentsline{toc}{chapter}{Erklärung}
 
-% This is where the converted markdown files will go 
-\vspace*{\fill}
+\begin{center}
+  Max\space Mustermann, geb. 01.04.1998\space(IF7,\space WS 17/2018, Matrikelnummer: 12345678)
+\end{center}
 
-\noindent \textit{
-I, AUTHORNAME confirm that the work presented in this thesis is my own. Where information has been derived from other sources, I confirm that this has been indicated in the thesis.
-} \vspace*{\fill} \pagenumbering{gobble} \newpage
+\vspace*{1.0cm}
 
-\hypertarget{abstract}{%
-\chapter*{Abstract}\label{abstract}}
+\noindent Hiermit erkläre ich, dass ich die Bachelorarbeit selbständig
+verfasst, noch nicht anderweitig für Prüfungszwecke vorgelegt, keine
+anderen als die angegebenen Quellen oder Hilfsmittel benutzt sowie
+wörtliche und sinngemäße Zitate als solche gekennzeichnet habe.
+
+\vspace*{1.0cm}
+
+München, 01.03.2018
+
+\vspace*{1.0cm}
+
+\dotfill
+
+Unterschrift \vspace*{\fill} \pagenumbering{gobble} \newpage
+
+\chapter*{Abstract}\label{abstract}
 \addcontentsline{toc}{chapter}{Abstract}
 
 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam et turpis
@@ -412,9 +453,10 @@ nibh. In lectus turpis, tempor at felis a, egestas fermentum massa.
 \pagenumbering{roman}
 \setcounter{page}{1}
 
-\hypertarget{acknowledgements}{%
-\chapter*{Acknowledgements}\label{acknowledgements}}
-\addcontentsline{toc}{chapter}{Acknowledgements}
+\newpage
+
+\chapter*{Danksagungen}\label{danksagungen}
+\addcontentsline{toc}{chapter}{Danksagungen}
 
 Interdum et malesuada fames ac ante ipsum primis in faucibus. Aliquam
 congue fermentum ante, semper porta nisl consectetur ut. Duis ornare sit
@@ -431,25 +473,57 @@ vulputate. Sed rhoncus ipsum eu urna placerat, sed rhoncus erat
 facilisis. Praesent vitae vestibulum dui. Proin interdum tellus ac velit
 varius, sed finibus turpis placerat.
 
+\pagenumbering{roman}
+\setcounter{page}{2}
+
 \newpage
 
 \pagenumbering{gobble}
+
+\rhead{}
+
+\setcounter{tocdepth}{2}
 
 \tableofcontents
 
 \newpage
 
+\pagenumbering{arabic}
+
+\rhead{\rightmark}
+
+\chapter*{Abbildungsverzeichnis}\label{abbildungsverzeichnis}
+\addcontentsline{toc}{chapter}{Abbildungsverzeichnis}
+
+\renewcommand{\listfigurename}{}
+
 \listoffigures
 
+\pagenumbering{roman}
+\setcounter{page}{3}
 \newpage
+
+\chapter*{Tabellenverzeichnis}\label{tabellenverzeichnis}
+\addcontentsline{toc}{chapter}{Tabellenverzeichnis}
+
+\renewcommand{\listtablename}{}
 
 \listoftables
 
 \newpage
 
-\hypertarget{abbreviations}{%
-\chapter*{Abbreviations}\label{abbreviations}}
-\addcontentsline{toc}{chapter}{Abbreviations}
+\chapter*{Abkürzungsverzeichnis}\label{abkuxfcrzungsverzeichnis}
+\addcontentsline{toc}{chapter}{Abkürzungsverzeichnis}
+
+\section*{Nicht ausgerichtet}\label{nicht-ausgerichtet}
+\addcontentsline{toc}{section}{Nicht ausgerichtet}
+
+API: \textbf{A}pplication \textbf{P}rogramming \textbf{I}nterface
+
+JSON: \textbf{J}ava\textbf{S}cript \textbf{O}bject \textbf{N}otation
+
+\section*{Ausgerichtet}\label{ausgerichtet}
+\addcontentsline{toc}{section}{Ausgerichtet}
 
 \begin{tabbing}
 \textbf{API}~~~~~~~~~~~~ \= \textbf{A}pplication \textbf{P}rogramming \textbf{I}nterface \\  
@@ -463,32 +537,29 @@ varius, sed finibus turpis placerat.
 \doublespacing
 \setlength{\parindent}{0.5in}
 
-\hypertarget{sec:intro}{%
-\chapter{Introduction, with a citation}\label{sec:intro}}
+\chapter{Einleitung mit Zitat}\label{sec:intro}
 
-\hypertarget{background}{%
-\section{Background}\label{background}}
+\section{Hintergrund}\label{hintergrund}
 
-This is the introduction. Quisque finibus aliquet cursus. Integer in
+Das ist die Einleitung. Quisque finibus aliquet cursus. Integer in
 pellentesque tellus. Duis eu dignissim nulla, a porttitor enim. Quisque
 vehicula leo non ultrices finibus. Duis vehicula quis sem sit amet
 sollicitudin. Integer neque est, pharetra et auctor vel, iaculis
 interdum lectus.
 
-To include a citation to the text, just add the citation key shown in
-the references.bib file. The style of the citation is determined by the
-ref\_format.csl file. For example, in The Living Sea you can find
-pictures of the Calypso (Cousteau Jacques \& Dugan James 1963).
+Um ein Zitat in den Text aufzunehmen, füge einfach den in der
+references.bib-Datei gezeigten Zitatschlüssel hinzu. Der Stil des Zitats
+wird durch die Datei ref\_format.csl bestimmt. Zum Beispiel findest Du
+in \emph{The Living Sea} Bilder vom \emph{Calypso} {[}1{]}.
 
 In neque mauris, maximus at sapien a, iaculis dignissim justo. Aliquam
 erat volutpat. Praesent varius risus auctor est ultricies, sit amet
 consequat nisi laoreet. Suspendisse non est et mauris pharetra sagittis
 non porta justo. Praesent malesuada metus ut sapien sodales ornare.
 
-\hypertarget{the-middle-bit}{%
-\section{The middle bit}\label{the-middle-bit}}
+\section{Der Mittelteil}\label{der-mittelteil}
 
-This is the middle bit. Phasellus quis ex in ipsum pellentesque lobortis
+Das ist der Mittelteil. Phasellus quis ex in ipsum pellentesque lobortis
 tincidunt sed massa. Nullam euismod sem quis dictum condimentum.
 Suspendisse risus metus, elementum eu congue quis, viverra ac metus.
 Donec non lectus at lectus euismod laoreet pharetra semper dui. Donec
@@ -506,59 +577,41 @@ penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec
 finibus leo nec dui imperdiet, tincidunt ornare orci venenatis. Maecenas
 placerat efficitur est, eu blandit magna hendrerit eu.
 
-\hypertarget{subsection-of-the-middle-bit}{%
-\subsection{Subsection of the middle
-bit}\label{subsection-of-the-middle-bit}}
+\subsection{Unterabschnitt des
+Mittelteils}\label{unterabschnitt-des-mittelteils}
 
-This is a subsection of the middle bit. Quisque sit amet tempus arcu, ac
-suscipit ante. Cras massa elit, pellentesque eget nisl ut, malesuada
-rutrum risus. Nunc in venenatis mi. Curabitur sit amet suscipit eros,
-non tincidunt nibh. Phasellus lorem lectus, iaculis non luctus eget,
-tempus non risus. Suspendisse ut felis mi.
+Das ist ein Unterabschnitt des Mittelteils. Quisque sit amet tempus
+arcu, ac suscipit ante. Cras massa elit, pellentesque eget nisl ut,
+malesuada rutrum risus. Nunc in venenatis mi. Curabitur sit amet
+suscipit eros, non tincidunt nibh. Phasellus lorem lectus, iaculis non
+luctus eget, tempus non risus. Suspendisse ut felis mi.
 
-\hypertarget{summary-of-chapters}{%
-\section{Summary of chapters}\label{summary-of-chapters}}
+\section{Zusammenfassung der Kapitel}\label{zusammenfassung-der-kapitel}
 
-This is a brief outline of what went into each chapter, and a section
-which shows how to reference headers (which are labelled automatically
-for you). This chapter, Section~\ref{sec:intro}, shows how to use
-citations and how to reference section headers.
-Section~\ref{sec:lit-review} shows how use and reference equations.
-Section~\ref{sec:research-code} shows how to use and reference code.
-Section~\ref{sec:research-figure} shows how to use, reference, and
-resize pdf and jpg figures. Section~\ref{sec:research-table} shows how
-to use and reference tables. Section~\ref{sec:research-final} is truly
-revolutionary (but shows nothing functional).
-\textbf{\protect\hyperlink{appendix-1-some-extra-stuff}{Appendix 1}}
-shows how to add chapters which are not numbered, and has to be
-referenced manually, as does
-\textbf{\protect\hyperlink{appendix-2-some-more-extra-stuff}{Appendix
-2}}. See the base
-\href{https://github.com/tompollard/phd_thesis_markdown/blob/master/README.md}{\texttt{README.md}}
-for how References are handled - leave \texttt{*\_references.md} alone,
-and provide it to \texttt{pandoc} last.
+Dies ist ein kurzer Überblick darüber, was in jedem Kapitel geschrieben
+wurde. \textbf{Kapitel 1} gibt einen Hintergrund über duis tempus justo
+quis arcu consectetur sollicitudin. \textbf{Kapitel 2} diskutiert morbi
+sollicitudin gravida tellus in maximus. \textbf{Kapitel 3} diskutiert
+vestibulum eleifend turpis id turpis sollicitudin aliquet.
+\textbf{Kapitel 4} zeigt wie phasellus gravida non ex id aliquet. Proin
+faucibus nibh sit amet augue blandit varius.
 
-Proin faucibus nibh sit amet augue blandit varius.
+\chapter{Literaturübersicht mit Mathe}\label{sec:lit-review}
 
-\hypertarget{sec:lit-review}{%
-\chapter{Literature review, with maths}\label{sec:lit-review}}
+\section{Einleitung}\label{einleitung}
 
-\hypertarget{introduction}{%
-\section{Introduction}\label{introduction}}
-
-This is the introduction. Duis in neque felis. In hac habitasse platea
+Das ist die Einleitung. Duis in neque felis. In hac habitasse platea
 dictumst. Cras eget rutrum elit. Pellentesque tristique venenatis
 pellentesque. Cras eu dignissim quam, vel sodales felis. Vestibulum
 efficitur justo a nibh cursus eleifend. Integer ultrices lorem at nunc
 efficitur lobortis.
 
-\hypertarget{the-middle}{%
-\section{The middle}\label{the-middle}}
+\section{Der Mittelteil}\label{der-mittelteil-1}
 
-This is the literature review. Nullam quam odio, volutpat ac ornare
+Das ist die Literaturübersicht. Nullam quam odio, volutpat ac ornare
 quis, vestibulum nec nulla. Aenean nec dapibus in
 mL/min\textsuperscript{-1}. Mathematical formula can be inserted using
-Latex and can be automatically numbered:
+Latex:
 
 \begin{equation}\protect\hypertarget{eq:my_equation}{}{f(x) = ax^3 + bx^2 + cx + d}\label{eq:my_equation}\end{equation}
 
@@ -572,9 +625,7 @@ tristique senectus et netus et malesuada fames ac turpis egestas. Sed
 faucibus pulvinar volutpat. Ut semper fringilla erat non dapibus. Nunc
 vitae felis eget purus placerat finibus laoreet ut nibh.
 
-\hypertarget{a-complicated-math-equation}{%
-\section{A complicated math
-equation}\label{a-complicated-math-equation}}
+\section{A complicated math equation}\label{a-complicated-math-equation}
 
 The following raw text in markdown behind
 Equation~\ref{eq:my_complicated_equation} shows that you can fall back
@@ -588,10 +639,9 @@ rendered in \texttt{thesis.pdf}
 \end{aligned}
 }\label{eq:my_complicated_equation}\end{equation}
 
-\hypertarget{conclusion}{%
-\section{Conclusion}\label{conclusion}}
+\section{Fazit}\label{fazit}
 
-This is the conclusion. Donec pulvinar molestie urna eu faucibus. In
+Das ist das Fazit. Donec pulvinar molestie urna eu faucibus. In
 tristique ut neque vel eleifend. Morbi ut massa vitae diam gravida
 iaculis. Pellentesque habitant morbi tristique senectus et netus et
 malesuada fames ac turpis egestas.
@@ -599,45 +649,39 @@ malesuada fames ac turpis egestas.
 \begin{itemize}
 \tightlist
 \item
-  first item in the list
+  erstes Element der Liste
 \item
-  second item in the list
+  zweites Element der Liste
 \item
-  third item in the list
+  drittes Element der Liste
 \end{itemize}
 
-\hypertarget{sec:research-code}{%
-\chapter{First research study, with code}\label{sec:research-code}}
+\chapter{Erste Untersuchung mit Code}\label{sec:research-code}
 
-\hypertarget{introduction-1}{%
-\section{Introduction}\label{introduction-1}}
+\section{Einleitung}\label{einleitung-1}
 
-This is the introduction. Nam mollis congue tortor, sit amet convallis
+Das ist die Einleitung. Nam mollis congue tortor, sit amet convallis
 tortor mollis eget. Fusce viverra ut magna eu sagittis. Vestibulum at
 ultrices sapien, at elementum urna. Nam a blandit leo, non lobortis
 quam. Aliquam feugiat turpis vitae tincidunt ultricies. Mauris
 ullamcorper pellentesque nisl, vel molestie lorem viverra at.
 
-\hypertarget{method}{%
-\section{Method}\label{method}}
+\section{Methode}\label{methode}
 
 Suspendisse iaculis in lacus ut dignissim. Cras dignissim dictum
 eleifend. Suspendisse potenti. Suspendisse et nisi suscipit, vestibulum
 est at, maximus sapien. Sed ut diam tortor.
 
-\hypertarget{sec:subsec-code}{%
-\subsection{Subsection 1 with example code
-block}\label{sec:subsec-code}}
+\subsection{Unterabschnitt 1 mit Beispielcode}\label{sec:subsec-code}
 
-This is the first part of the methodology. Cras porta dui a dolor
-tincidunt placerat. Cras scelerisque sem et malesuada vestibulum.
-Vivamus faucibus ligula ac sodales consectetur. Aliquam vel tristique
-nisl. Aliquam erat volutpat. Pellentesque iaculis enim sit amet posuere
-facilisis. Integer egestas quam sit amet nunc maximus, id bibendum ex
-blandit.
+Das ist der erste Teil der Methodik. Cras porta dui a dolor tincidunt
+placerat. Cras scelerisque sem et malesuada vestibulum. Vivamus faucibus
+ligula ac sodales consectetur. Aliquam vel tristique nisl. Aliquam erat
+volutpat. Pellentesque iaculis enim sit amet posuere facilisis. Integer
+egestas quam sit amet nunc maximus, id bibendum ex blandit.
 
-For syntax highlighting in code blocks, add three ```'' characters
-before and after a code block:
+Syntaxhervorhebung in Codeblöcken erreicht man mit drei ```'' Zeichen
+vor und nach dem Codeblock.
 
 \begin{codelisting}
 
@@ -658,109 +702,110 @@ before and after a code block:
 You can then reference the code block like this
 (Listing~\ref{lst:code}).
 
-\hypertarget{subsection-2}{%
-\subsection{Subsection 2}\label{subsection-2}}
+\subsection{Unterabschnitt 2}\label{unterabschnitt-2}
 
 By running the code in Section~\ref{sec:subsec-code}, we solved AI
-completely. This is the second part of the methodology. Proin tincidunt
-odio non sem mollis tristique. Fusce pharetra accumsan volutpat. In nec
+completely. Das ist der zweite Teil der Methodik. Proin tincidunt odio
+non sem mollis tristique. Fusce pharetra accumsan volutpat. In nec
 mauris vel orci rutrum dapibus nec ac nibh. Praesent malesuada sagittis
 nulla, eget commodo mauris ultricies eget. Suspendisse iaculis finibus
 ligula.
 
-\hypertarget{results}{%
-\section{Results}\label{results}}
+Alternativ können Sie auch mit LaTeX einen Codeblock erstellen, wie im
+folgenden Java-Beispiel gezeigt:
 
-These are the results. Ut accumsan tempus aliquam. Sed massa ex, egestas
-non libero id, imperdiet scelerisque augue. Duis rutrum ultrices arcu et
-ultricies. Proin vel elit eu magna mattis vehicula. Sed ex erat,
+\lstinputlisting[style=javaCodeStyle, caption=Main.java]{source/code/HelloWorld.java}
+
+Wenn Sie \texttt{javaCodeStyle} wie in der \texttt{preamble.tex}
+definiert verwenden, ist es am besten, die maximale Zeilenlänge im
+Quellcode auf 80 Zeichen zu begrenzen.
+
+\section{Ergebnisse}\label{ergebnisse}
+
+Das sind die Ergebnisse. Ut accumsan tempus aliquam. Sed massa ex,
+egestas non libero id, imperdiet scelerisque augue. Duis rutrum ultrices
+arcu et ultricies. Proin vel elit eu magna mattis vehicula. Sed ex erat,
 fringilla vel feugiat ut, fringilla non diam.
 
-\hypertarget{discussion}{%
-\section{Discussion}\label{discussion}}
+\section{Auseinandersetzung}\label{auseinandersetzung}
 
-This is the discussion. Duis ultrices tempor sem vitae convallis.
-Pellentesque lobortis risus ac nisi varius bibendum. Phasellus volutpat
-aliquam varius. Mauris vitae neque quis libero volutpat finibus. Nunc
-diam metus, imperdiet vitae leo sed, varius posuere orci.
+Das ist die Auseinandersetzung mit den Ergebnissen. Duis ultrices tempor
+sem vitae convallis. Pellentesque lobortis risus ac nisi varius
+bibendum. Phasellus volutpat aliquam varius. Mauris vitae neque quis
+libero volutpat finibus. Nunc diam metus, imperdiet vitae leo sed,
+varius posuere orci.
 
-\hypertarget{conclusion-1}{%
-\section{Conclusion}\label{conclusion-1}}
+\section{Schlussfolgerung}\label{schlussfolgerung}
 
-This is the conclusion to the chapter. Praesent bibendum urna orci, a
-venenatis tellus venenatis at. Etiam ornare, est sed lacinia elementum,
-lectus diam tempor leo, sit amet elementum ex elit id ex. Ut ac viverra
-turpis. Quisque in nisl auctor, ornare dui ac, consequat tellus.
+Das ist die Schlussfolgerung des Kapitels. Praesent bibendum urna orci,
+a venenatis tellus venenatis at. Etiam ornare, est sed lacinia
+elementum, lectus diam tempor leo, sit amet elementum ex elit id ex. Ut
+ac viverra turpis. Quisque in nisl auctor, ornare dui ac, consequat
+tellus.
 
-\hypertarget{sec:research-figure}{%
-\chapter{Research containing a figure}\label{sec:research-figure}}
+\chapter{Untersuchung mit Abbildung}\label{sec:research-figure}
 
-\hypertarget{introduction-2}{%
-\section{Introduction}\label{introduction-2}}
+\section{Einleitung}\label{einleitung-2}
 
-This is the introduction. Sed vulputate tortor at nisl blandit interdum.
+Das ist die Einleitung. Sed vulputate tortor at nisl blandit interdum.
 Cras sagittis massa ex, quis eleifend purus condimentum congue. Maecenas
 tristique, justo vitae efficitur mollis, mi nulla varius elit, in
 consequat ligula nulla ut augue. Phasellus diam sapien, placerat sit
 amet tempor non, lobortis tempus ante.
 
-\hypertarget{method-1}{%
-\section{Method}\label{method-1}}
+\section{Methode}\label{methode-1}
 
 Donec imperdiet, lectus vestibulum sagittis tempus, turpis dolor euismod
 justo, vel tempus neque libero sit amet tortor. Nam cursus commodo
 tincidunt.
 
-\hypertarget{subsection-1}{%
-\subsection{Subsection 1}\label{subsection-1}}
+\subsection{Unterabschnitt 1}\label{unterabschnitt-1}
 
-This is the first part of the methodology. Duis tempor sapien sed tellus
+Das ist der erste Teil der Methodik. Duis tempor sapien sed tellus
 ultrices blandit. Sed porta mauris tortor, eu vulputate arcu dapibus ac.
 Curabitur sodales at felis efficitur sollicitudin. Quisque at neque
 sollicitudin, mollis arcu vitae, faucibus tellus.
 
-\hypertarget{subsection-2-1}{%
-\subsection{Subsection 2}\label{subsection-2-1}}
+\subsection{Unterabschnitt 2}\label{unterabschnitt-2-1}
 
-This is the second part of the methodology. Sed ut ipsum ultrices,
-interdum ipsum vel, lobortis diam. Curabitur sit amet massa quis tortor
-molestie dapibus a at libero. Mauris mollis magna quis ante vulputate
-consequat. Integer leo turpis, suscipit ac venenatis pellentesque,
-efficitur non sem. Pellentesque eget vulputate turpis. Etiam id nibh at
-elit fermentum interdum.
+Das ist der zweite Teil der Methodik. Sed ut ipsum ultrices, interdum
+ipsum vel, lobortis diam. Curabitur sit amet massa quis tortor molestie
+dapibus a at libero. Mauris mollis magna quis ante vulputate consequat.
+Integer leo turpis, suscipit ac venenatis pellentesque, efficitur non
+sem. Pellentesque eget vulputate turpis. Etiam id nibh at elit fermentum
+interdum.
 
-\hypertarget{results-1}{%
-\section{Results}\label{results-1}}
+\section{Ergebnisse}\label{ergebnisse-1}
 
-These are the results. In vitae odio at libero elementum fermentum vel
+Das sind die Ergebnisse. In vitae odio at libero elementum fermentum vel
 iaculis enim. Nullam finibus sapien in congue condimentum. Curabitur et
 ligula et ipsum mollis fringilla.
 
-\hypertarget{discussion-1}{%
-\section{Discussion}\label{discussion-1}}
+\section{Auseinandersetzung}\label{auseinandersetzung-1}
 
-Figure~\ref{fig:my_fig} shows how to add a figure. Donec ut lacinia
-nibh. Nam tincidunt augue et tristique cursus. Vestibulum sagittis odio
-nisl, a malesuada turpis blandit quis. Cras ultrices metus tempor
-laoreet sodales. Nam molestie ipsum ac imperdiet laoreet. Pellentesque
-habitant morbi tristique senectus et netus et malesuada fames ac turpis
-egestas.
+Abbildung Figure~\ref{fig:my_fig} zeigt wie man eine Abbildung einfügen
+kann. Donec ut lacinia nibh. Nam tincidunt augue et tristique cursus.
+Vestibulum sagittis odio nisl, a malesuada turpis blandit quis. Cras
+ultrices metus tempor laoreet sodales. Nam molestie ipsum ac imperdiet
+laoreet. Pellentesque habitant morbi tristique senectus et netus et
+malesuada fames ac turpis egestas.
 
 \begin{figure}
 \hypertarget{fig:my_fig}{%
 \centering
-\includegraphics[width=1\textwidth,height=\textheight]{source/figures/example_figure.pdf}
-\caption[Figure short caption]{RV Calypso is a former British Royal Navy
-minesweeper converted into a research vessel for the oceanographic
-researcher Jacques-Yves Cousteau. It was equipped with a mobile
-laboratory for underwater field research.}\label{fig:my_fig}
+\includegraphics[width=1\textwidth,height=\textheight]{source/figures/beispielbild.jpg}
+\caption[Figure short caption]{In den Medien werden für Hacker häufig
+Symbolbilder wie dieses verwendet. Foto:
+\href{https://pixabay.com/photo-2883632/}{pixabay.com}, Nutzer:
+\href{https://pixabay.com/de/users/geralt-9301/}{geralt} Lizenz:
+\href{https://creativecommons.org/publicdomain/zero/1.0/deed.de}{Creative
+Commons CC0} \label{mein_label}}\label{fig:my_fig}
 }
 \end{figure}
 
-\hypertarget{conclusion-2}{%
-\section{Conclusion}\label{conclusion-2}}
+\section{Schlussfolgerung}\label{schlussfolgerung-1}
 
-This is the conclusion to the chapter. Quisque nec purus a quam
+Das ist die Schlussfolgerung des Kapitels. Quisque nec purus a quam
 consectetur volutpat. Cum sociis natoque penatibus et magnis dis
 parturient montes, nascetur ridiculus mus. In lorem justo, convallis
 quis lacinia eget, laoreet eu metus. Fusce blandit tellus tellus.
@@ -776,52 +821,44 @@ faucibus.
 }
 \end{figure}
 
-\hypertarget{sec:research-table}{%
-\chapter{Research containing a table}\label{sec:research-table}}
+\chapter{Untersuchung mit Tabelle}\label{sec:research-table}
 
-\hypertarget{introduction-3}{%
-\section{Introduction}\label{introduction-3}}
+\section{Einleitung}\label{einleitung-3}
 
-This is the introduction. Phasellus non purus id mauris aliquam rutrum
-vitae quis tellus. Maecenas rhoncus ligula nulla, fringilla placerat mi
-consectetur eu. Aenean nec metus ac est ornare posuere. Nunc ipsum
-lacus, gravida commodo turpis quis, rutrum eleifend erat. Pellentesque
-id lorem eget ante porta tincidunt nec nec tellus.
+Das ist die Einleitung. Sed vulputate tortor at nisl blandit interdum.
+Cras sagittis massa ex, quis eleifend purus condimentum congue. Maecenas
+tristique, justo vitae efficitur mollis, mi nulla varius elit, in
+consequat ligula nulla ut augue. Phasellus diam sapien, placerat sit
+amet tempor non, lobortis tempus ante.
 
-\hypertarget{method-2}{%
-\section{Method}\label{method-2}}
+\section{Methode}\label{methode-2}
 
-Vivamus consectetur, velit in congue lobortis, massa massa lacinia urna,
-sollicitudin semper ipsum augue quis tortor. Donec quis nisl at arcu
-volutpat ultrices. Maecenas ex nibh, consequat ac blandit sit amet,
-molestie in odio. Morbi finibus libero et nisl dignissim, at ultricies
-ligula pulvinar.
+Donec imperdiet, lectus vestibulum sagittis tempus, turpis dolor euismod
+justo, vel tempus neque libero sit amet tortor. Nam cursus commodo
+tincidunt.
 
-\hypertarget{subsection-1-1}{%
-\subsection{Subsection 1}\label{subsection-1-1}}
+\subsection{Unterabschnitt 1}\label{unterabschnitt-1-1}
 
-This is the first part of the methodology. Integer leo erat, commodo in
-lacus vel, egestas varius elit. Nulla eget magna quam. Nullam
-sollicitudin dolor ut ipsum varius tincidunt. Duis dignissim massa in
-ipsum accumsan imperdiet. Maecenas suscipit sapien sed dui pharetra
-blandit. Morbi fermentum est vel quam pretium maximus.
+Das ist der erste Teil der Methodik. Duis tempor sapien sed tellus
+ultrices blandit. Sed porta mauris tortor, eu vulputate arcu dapibus ac.
+Curabitur sodales at felis efficitur sollicitudin. Quisque at neque
+sollicitudin, mollis arcu vitae, faucibus tellus.
 
-\hypertarget{subsection-2-2}{%
-\subsection{Subsection 2}\label{subsection-2-2}}
+\subsection{Unterabschnitt 2}\label{unterabschnitt-2-2}
 
-This is the second part of the methodology. Nullam accumsan condimentum
-eros eu volutpat. Maecenas quis ligula tempor, interdum ante sit amet,
-aliquet sem. Fusce tellus massa, blandit id tempus at, cursus in tortor.
-Nunc nec volutpat ante. Phasellus dignissim ut lectus quis porta. Lorem
-ipsum dolor sit amet, consectetur adipiscing elit.
+Das ist der zweite Teil der Methodik. Sed ut ipsum ultrices, interdum
+ipsum vel, lobortis diam. Curabitur sit amet massa quis tortor molestie
+dapibus a at libero. Mauris mollis magna quis ante vulputate consequat.
+Integer leo turpis, suscipit ac venenatis pellentesque, efficitur non
+sem. Pellentesque eget vulputate turpis. Etiam id nibh at elit fermentum
+interdum.
 
-\hypertarget{results-2}{%
-\section{Results}\label{results-2}}
+\section{Ergebnisse}\label{ergebnisse-2}
 
-Table~\ref{tbl:random} shows us how to add a table. Integer tincidunt
-sed nisl eget pellentesque. Mauris eleifend, nisl non lobortis
-fringilla, sapien eros aliquet orci, vitae pretium massa neque eu
-turpis. Pellentesque tincidunt aliquet volutpat. Ut ornare dui id ex
+Die Tabelle \ref{tbl:random} zeigt uns wie man eine Tabelle hinzufügt.
+Integer tincidunt sed nisl eget pellentesque. Mauris eleifend, nisl non
+lobortis fringilla, sapien eros aliquet orci, vitae pretium massa neque
+eu turpis. Pellentesque tincidunt aliquet volutpat. Ut ornare dui id ex
 sodales laoreet.
 
 \newpage
@@ -830,160 +867,127 @@ sodales laoreet.
 
 \hypertarget{tbl:random}{}
 \begin{longtable}[]{@{}
-  >{\raggedright\arraybackslash}p{(\columnwidth - 12\tabcolsep) * \real{0.1529}}
-  >{\centering\arraybackslash}p{(\columnwidth - 12\tabcolsep) * \real{0.0941}}
-  >{\centering\arraybackslash}p{(\columnwidth - 12\tabcolsep) * \real{0.1176}}
-  >{\centering\arraybackslash}p{(\columnwidth - 12\tabcolsep) * \real{0.1765}}
-  >{\centering\arraybackslash}p{(\columnwidth - 12\tabcolsep) * \real{0.1529}}
-  >{\centering\arraybackslash}p{(\columnwidth - 12\tabcolsep) * \real{0.1529}}
-  >{\centering\arraybackslash}p{(\columnwidth - 12\tabcolsep) * \real{0.1529}}@{}}
-\caption[Table short caption]{\label{tbl:random}Important data for
-various land masses.}\tabularnewline
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.2778}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.3333}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.2778}}@{}}
+\caption[Table short caption]{\label{tbl:random}Das ist die
+Tabellenbeschriftung.}\tabularnewline
 \toprule\noalign{}
 \begin{minipage}[b]{\linewidth}\raggedright
-Landmass
-\end{minipage} & \begin{minipage}[b]{\linewidth}\centering
-\% stuff
-\end{minipage} & \begin{minipage}[b]{\linewidth}\centering
-Number of Owls
-\end{minipage} & \begin{minipage}[b]{\linewidth}\centering
-Dolphins per Capita
-\end{minipage} & \begin{minipage}[b]{\linewidth}\centering
-How Many Foos
-\end{minipage} & \begin{minipage}[b]{\linewidth}\centering
-How Many Bars
-\end{minipage} & \begin{minipage}[b]{\linewidth}\centering
-Forbidden Float
+Spalte 1
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Spalte 2
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Spalte 3
 \end{minipage} \\
 \midrule\noalign{}
 \endfirsthead
 \toprule\noalign{}
 \begin{minipage}[b]{\linewidth}\raggedright
-Landmass
-\end{minipage} & \begin{minipage}[b]{\linewidth}\centering
-\% stuff
-\end{minipage} & \begin{minipage}[b]{\linewidth}\centering
-Number of Owls
-\end{minipage} & \begin{minipage}[b]{\linewidth}\centering
-Dolphins per Capita
-\end{minipage} & \begin{minipage}[b]{\linewidth}\centering
-How Many Foos
-\end{minipage} & \begin{minipage}[b]{\linewidth}\centering
-How Many Bars
-\end{minipage} & \begin{minipage}[b]{\linewidth}\centering
-Forbidden Float
+Spalte 1
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Spalte 2
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Spalte 3
 \end{minipage} \\
 \midrule\noalign{}
 \endhead
 \bottomrule\noalign{}
 \endlastfoot
-North America & 94\% & 20,028 & 17,465 & 12,084 & 20,659 & 1.71 \\
-Central America & 91\% & 6564 & 6350 & 8,189 & 12,012 & 1.52 \\
-South America & 86\% & 3902 & 4127 & 5,205 & 6,565 & 1.28 \\
-Africa & 84\% & 2892 & 3175 & 3,862 & 4,248 & 1.1 \\
-Europe & 92\% & 20,964 & 17,465 & 15,303 & 24,203 & 1.58 \\
-Asia & 87\% & 6852 & 6350 & 8,255 & 11,688 & 1.47 \\
-Oceania & 87\% & 4044 & 4127 & 5,540 & 6,972 & 1.28 \\
-Antarctica & 83\% & 2964 & 3175 & 4,402 & 4,941 & 1.13 \\
+Zeile 1 & 0.1 & 0.2 \\
+Zeile 2 & 0.3 & 0.3 \\
+Zeile 3 & 0.4 & 0.4 \\
+Zeile 4 & 0.5 & 0.6 \\
 \end{longtable}
 
 \let\pandoctableshortcapt\relax
 
-\hypertarget{discussion-2}{%
-\section{Discussion}\label{discussion-2}}
+\section{Auseinandersetzung}\label{auseinandersetzung-2}
 
-This is the discussion. As we saw in Table~\ref{tbl:random}, many things
-are true, and other things are not. Etiam sit amet mi eros. Donec vel
-nisi sed purus gravida fermentum at quis odio. Vestibulum quis nisl sit
-amet justo maximus molestie. Maecenas vitae arcu erat. Nulla facilisi.
-Nam pretium mauris eu enim porttitor, a mattis velit dictum. Nulla sit
-amet ligula non mauris volutpat fermentum quis vitae sapien.
+Das ist die Auseinandersetzung mit den Ergebnissen. As we saw in
+Table~\ref{tbl:random}, many things are true, and other things are not.
+Etiam sit amet mi eros. Donec vel nisi sed purus gravida fermentum at
+quis odio. Vestibulum quis nisl sit amet justo maximus molestie.
+Maecenas vitae arcu erat. Nulla facilisi. Nam pretium mauris eu enim
+porttitor, a mattis velit dictum. Nulla sit amet ligula non mauris
+volutpat fermentum quis vitae sapien.
 
-\hypertarget{conclusion-3}{%
-\section{Conclusion}\label{conclusion-3}}
+\section{Schlussfolgerung}\label{schlussfolgerung-2}
 
-This is the conclusion to the chapter. Nullam porta tortor id vehicula
-interdum. Quisque pharetra, neque ut accumsan suscipit, orci orci
-commodo tortor, ac finibus est turpis eget justo. Cras sodales nibh nec
-mauris laoreet iaculis. Morbi volutpat orci felis, id condimentum nulla
-suscipit eu. Fusce in turpis quis ligula tempus scelerisque eget quis
-odio. Vestibulum et dolor id erat lobortis ullamcorper quis at sem.
+Das ist die Schlussfolgerung des Kapitels. Nullam porta tortor id
+vehicula interdum. Quisque pharetra, neque ut accumsan suscipit, orci
+orci commodo tortor, ac finibus est turpis eget justo. Cras sodales nibh
+nec mauris laoreet iaculis. Morbi volutpat orci felis, id condimentum
+nulla suscipit eu. Fusce in turpis quis ligula tempus scelerisque eget
+quis odio. Vestibulum et dolor id erat lobortis ullamcorper quis at sem.
 
-\hypertarget{sec:research-final}{%
-\chapter{Final research study}\label{sec:research-final}}
+\chapter{Finale Untersuchung}\label{sec:research-final}
 
-\hypertarget{introduction-4}{%
-\section{Introduction}\label{introduction-4}}
+\section{Einleitung}\label{einleitung-4}
 
-This is the introduction. Nunc lorem odio, laoreet eu turpis at,
-condimentum sagittis diam. Phasellus metus ligula, auctor ac nunc vel,
-molestie mattis libero. Praesent id posuere ex, vel efficitur nibh.
-Quisque vestibulum accumsan lacus vitae mattis.
+Das ist die Einleitung. Sed vulputate tortor at nisl blandit interdum.
+Cras sagittis massa ex, quis eleifend purus condimentum congue. Maecenas
+tristique, justo vitae efficitur mollis, mi nulla varius elit, in
+consequat ligula nulla ut augue. Phasellus diam sapien, placerat sit
+amet tempor non, lobortis tempus ante.
 
-\hypertarget{method-3}{%
-\section{Method}\label{method-3}}
+\section{Methode}\label{methode-3}
 
-In tincidunt viverra dolor, ac pharetra tellus faucibus eget.
-Pellentesque tempor a enim nec venenatis. Morbi blandit magna imperdiet
-posuere auctor. Maecenas in maximus est.
+Donec imperdiet, lectus vestibulum sagittis tempus, turpis dolor euismod
+justo, vel tempus neque libero sit amet tortor. Nam cursus commodo
+tincidunt.
 
-\hypertarget{subsection-1-2}{%
-\subsection{Subsection 1}\label{subsection-1-2}}
+\subsection{Unterabschnitt 1}\label{unterabschnitt-1-2}
 
-This is the first part of the methodology. Praesent mollis sem diam, sit
-amet tristique lacus vulputate quis. Vivamus rhoncus est rhoncus tellus
-lacinia, a interdum sem egestas. Curabitur quis urna vel quam blandit
-semper vitae a leo. Nam vel lectus lectus.
+Das ist der erste Teil der Methodik. Duis tempor sapien sed tellus
+ultrices blandit. Sed porta mauris tortor, eu vulputate arcu dapibus ac.
+Curabitur sodales at felis efficitur sollicitudin. Quisque at neque
+sollicitudin, mollis arcu vitae, faucibus tellus.
 
-\hypertarget{subsection-2-3}{%
-\subsection{Subsection 2}\label{subsection-2-3}}
+\subsection{Unterabschnitt 2}\label{unterabschnitt-2-3}
 
-This is the second part of the methodology. Aenean vel pretium tortor.
-Aliquam erat volutpat. Quisque quis lobortis mi. Nulla turpis leo,
-ultrices nec nulla non, ullamcorper laoreet risus.
+Das ist der zweite Teil der Methodik. Sed ut ipsum ultrices, interdum
+ipsum vel, lobortis diam. Curabitur sit amet massa quis tortor molestie
+dapibus a at libero. Mauris mollis magna quis ante vulputate consequat.
+Integer leo turpis, suscipit ac venenatis pellentesque, efficitur non
+sem. Pellentesque eget vulputate turpis. Etiam id nibh at elit fermentum
+interdum.
 
-\hypertarget{results-3}{%
-\section{Results}\label{results-3}}
+\section{Ergebnisse}\label{ergebnisse-3}
 
-These are the results. Curabitur vulputate nisl non ante tincidunt
-tempor. Aenean porta nisi quam, sed ornare urna congue sed. Curabitur in
-sapien justo. Quisque pulvinar ullamcorper metus, eu varius mauris
-pellentesque et. In hac habitasse platea dictumst. Pellentesque nec
-porttitor libero. Duis et magna a massa lacinia cursus.
+Das sind die Ergebnisse. In vitae odio at libero elementum fermentum vel
+iaculis enim. Nullam finibus sapien in congue condimentum. Curabitur et
+ligula et ipsum mollis fringilla.
 
-\hypertarget{discussion-3}{%
-\section{Discussion}\label{discussion-3}}
+\section{Auseinandersetzung}\label{auseinandersetzung-3}
 
-This is the discussion. Curabitur gravida nisl id gravida congue. Duis
-est nisi, sagittis eget accumsan ullamcorper, semper quis turpis. Mauris
-ultricies diam metus, sollicitudin ultricies turpis lobortis vitae. Ut
-egestas vehicula enim, porta molestie neque consectetur placerat.
-Integer iaculis sapien dolor, non porta nibh condimentum ut.
+Das ist die Auseinandersetzung mit den Ergebnissen. Curabitur gravida
+nisl id gravida congue. Duis est nisi, sagittis eget accumsan
+ullamcorper, semper quis turpis. Mauris ultricies diam metus,
+sollicitudin ultricies turpis lobortis vitae. Ut egestas vehicula enim,
+porta molestie neque consectetur placerat. Integer iaculis sapien dolor,
+non porta nibh condimentum ut.
 
-\hypertarget{conclusion-4}{%
-\section{Conclusion}\label{conclusion-4}}
+\section{Schlussfolgerung}\label{schlussfolgerung-3}
 
-This is the conclusion to the chapter. Nulla sed condimentum lectus.
+Das ist die Schlussfolgerung des Kapitels. Nulla sed condimentum lectus.
 Duis sed tempor erat, at cursus lacus. Nam vitae tempus arcu, id
 vestibulum sapien. Cum sociis natoque penatibus et magnis dis parturient
 montes, nascetur ridiculus mus.
 
-\hypertarget{sec:conclusion}{%
-\chapter{Conclusion}\label{sec:conclusion}}
+\chapter{Fazit}\label{sec:conclusion}
 
-\hypertarget{thesis-summary}{%
-\section{Thesis summary}\label{thesis-summary}}
+\section{Zusammenfassung der Arbeit}\label{zusammenfassung-der-arbeit}
 
-In summary, pellentesque habitant morbi tristique senectus et netus et
-malesuada fames ac turpis egestas. Nunc eleifend, ex a luctus porttitor,
-felis ex suscipit tellus, ut sollicitudin sapien purus in libero. Nulla
-blandit eget urna vel tempus. Praesent fringilla dui sapien, sit amet
-egestas leo sollicitudin at.
+Zusammenfassend pellentesque habitant morbi tristique senectus et netus
+et malesuada fames ac turpis egestas. Nunc eleifend, ex a luctus
+porttitor, felis ex suscipit tellus, ut sollicitudin sapien purus in
+libero. Nulla blandit eget urna vel tempus. Praesent fringilla dui
+sapien, sit amet egestas leo sollicitudin at.
 
-\hypertarget{future-work}{%
-\section{Future work}\label{future-work}}
+\section{Zukünftige Arbeit}\label{zukuxfcnftige-arbeit}
 
-There are several potential directions for extending this thesis. Lorem
+Es gibt mehrere mögliche Richtungen, um diese Arbeit zu erweitern. Lorem
 ipsum dolor sit amet, consectetur adipiscing elit. Aliquam gravida ipsum
 at tempor tincidunt. Aliquam ligula nisl, blandit et dui eu, eleifend
 tempus nibh. Nullam eleifend sapien eget ante hendrerit commodo.
@@ -995,22 +999,22 @@ pharetra sed. In dapibus magna convallis lectus sodales, a consequat sem
 euismod. Curabitur in interdum purus. Integer ultrices laoreet aliquet.
 Nulla vel dapibus urna. Nunc efficitur erat ac nisi auctor sodales.
 
-\hypertarget{appendix-1-some-extra-stuff}{%
-\chapter*{Appendix 1: Some extra
-stuff}\label{appendix-1-some-extra-stuff}}
-\addcontentsline{toc}{chapter}{Appendix 1: Some extra stuff}
+\chapter*{Anhang 1: Einige Extras}\label{anhang-1-einige-extras}
+\addcontentsline{toc}{chapter}{Anhang 1: Einige Extras}
 
-Add appendix 1 here. Vivamus hendrerit rhoncus interdum. Sed ullamcorper
-et augue at porta. Suspendisse facilisis imperdiet urna, eu pellentesque
-purus suscipit in. Integer dignissim mattis ex aliquam blandit.
-Curabitur lobortis quam varius turpis ultrices egestas.
+\rhead{ANHANG 1}
 
-\hypertarget{appendix-2-some-more-extra-stuff}{%
-\chapter*{Appendix 2: Some more extra
-stuff}\label{appendix-2-some-more-extra-stuff}}
-\addcontentsline{toc}{chapter}{Appendix 2: Some more extra stuff}
+Füge Anhang 1 hier hinzu. Vivamus hendrerit rhoncus interdum. Sed
+ullamcorper et augue at porta. Suspendisse facilisis imperdiet urna, eu
+pellentesque purus suscipit in. Integer dignissim mattis ex aliquam
+blandit. Curabitur lobortis quam varius turpis ultrices egestas.
 
-Add appendix 2 here. Aliquam rhoncus mauris ac neque imperdiet, in
+\chapter*{Anhang 2: Noch mehr Extras}\label{anhang-2-noch-mehr-extras}
+\addcontentsline{toc}{chapter}{Anhang 2: Noch mehr Extras}
+
+\rhead{ANHANG 2}
+
+Füge Anhang 2 hier hinzu. Aliquam rhoncus mauris ac neque imperdiet, in
 mattis eros aliquam. Etiam sed massa et risus posuere rutrum vel et
 mauris. Integer id mauris sed arcu venenatis finibus. Etiam nec
 hendrerit purus, sed cursus nunc. Pellentesque ac luctus magna. Aenean
@@ -1021,15 +1025,19 @@ Aenean dictum nunc id felis rhoncus aliquam.
 \singlespacing
 \setlength{\parindent}{0in}
 
-\hypertarget{references}{%
-\chapter*{References}\label{references}}
-\addcontentsline{toc}{chapter}{References}
+\chapter{Literaturverzeichnis}\label{literaturverzeichnis}
+
+\rhead{LITERATURVERZEICHNIS}
 
 \hypertarget{refs}{}
-\begin{CSLReferences}{1}{0}
-\leavevmode\vadjust pre{\hypertarget{ref-Cousteau1963}{}}%
-Cousteau Jacques \& Dugan James, 1963. \emph{{The Living Sea: by
-Jacques-Yves Cousteau}}, London: Hamish Hamilton.
+\begin{CSLReferences}{0}{0}
+\leavevmode\vadjust pre{\hypertarget{ref-phd_thesis_markdown}{}}%
+\CSLLeftMargin{{[}1{]} }%
+\CSLRightInline{Tom Pollard; Marvin Reimer; David San; Arco Mul; Matthew
+Gwynfryn Thomas; Jakub Nowosad; Dennis Weissmann; W. Caleb McDaniel.
+2016. \emph{Template for writing a PhD thesis in Markdown}. Tom Pollard.
+Abgerufen 1. November 2017 von
+\url{https://github.com/tompollard/phd_thesis_markdown/tree/v1.0}}
 
 \end{CSLReferences}
 

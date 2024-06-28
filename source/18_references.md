@@ -2,12 +2,13 @@
 \singlespacing
 \setlength{\parindent}{0in}
 
-<!-- 
-Do not edit this page.
+<!--
+Bearbeite diese Seite nicht.
 
-References are automatically generated from the BibTex file (References.bib)
+Referenzen werden automatisch aus der BibTex-Datei (References.bib) generiert.
 
-...which you should create using your reference manager.
+... die Du mit deinem Referenzmanager erstellen solltest.
 -->
 
-# References
+# Literaturverzeichnis
+\rhead{LITERATURVERZEICHNIS}
